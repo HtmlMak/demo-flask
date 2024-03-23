@@ -28,4 +28,4 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:${{ vars.GITHUB_RUN_ID }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:${{ github.GITHUB_RUN_ID }}
