@@ -28,7 +28,7 @@ jobs:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:${{ github.sha }},${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:latest
   
   deploy:
     needs: build
