@@ -29,3 +29,29 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:latest
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'workflow_dispatch'
+    env:
+      server_ip: 5.35.87.129
+    steps:
+      -
+        name: Checkout
+        uses: actions/checkout@v4
+      -
+        name: Set up SSH
+        uses: webfactory/ssh-agent@v0.5.4
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      -
+        name: Generate docker-compose.yml
+        run: |
+          scp -o StrictHostKeyChecking=no docker-compose.tpl.yml dev@${{ server_ip }}:~/docker-compose.yml
+          echo "WEB_CONTAINER_NAME=${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:${{ github.sha }}" > vars.env
+          scp -o StrictHostKeyChecking=no vars.env dev@${{ server_ip }}:~/.env
+      -
+        name: Deploy with docker-compose
+        run: |
+          ssh -o StrictHostKeyChecking=no dev@${{ server_ip }} 'cd ~ && docker-compose up -d'
