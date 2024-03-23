@@ -35,7 +35,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'workflow_dispatch'
     env:
-      server_ip: 5.35.87.129
+      SERVER_IP: 5.35.87.129
     steps:
       -
         name: Checkout
@@ -48,10 +48,10 @@ jobs:
       -
         name: Generate docker-compose.yml
         run: |
-          scp -o StrictHostKeyChecking=no docker-compose.tpl.yml dev@${{ server_ip }}:~/docker-compose.yml
+          scp -o StrictHostKeyChecking=no docker-compose.tpl.yml dev@${{ env.SERVER_IP }}:~/docker-compose.yml
           echo "WEB_CONTAINER_NAME=${{ secrets.DOCKERHUB_USERNAME }}/demo-flask:${{ github.sha }}" > vars.env
-          scp -o StrictHostKeyChecking=no vars.env dev@${{ server_ip }}:~/.env
+          scp -o StrictHostKeyChecking=no vars.env dev@${{ env.SERVER_IP }}:~/.env
       -
         name: Deploy with docker-compose
         run: |
-          ssh -o StrictHostKeyChecking=no dev@${{ server_ip }} 'cd ~ && docker-compose up -d'
+          ssh -o StrictHostKeyChecking=no dev@${{ env.SERVER_IP }} 'cd ~ && docker-compose up -d'
